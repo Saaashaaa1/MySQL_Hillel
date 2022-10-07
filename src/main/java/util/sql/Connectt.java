@@ -19,7 +19,7 @@ public class Connectt {
         if (connection == null) {
 
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://127.0.0.1:3306/sys", "root", "root");
+                    "jdbc:mysql://127.0.0.1:3306/sys", "root", "Butera1111");
         }
         return connection;
     }

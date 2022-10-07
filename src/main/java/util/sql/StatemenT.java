@@ -1,6 +1,6 @@
 package util.sql;
-
 import data.Human;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -25,38 +25,73 @@ public class StatemenT {
         statement = conn.createStatement();
         return statement;
     }
-
-    public void selectByUserNameEmail(String username, String email) {
-        String s = "SELECT * FROM sys.user where username=\"" + username + "\" and email=\"" + email + "\"";
-        try {
-            ResultSet resultSet = statement.executeQuery(s);//запрос с ответом resultset(ответ)
-            resultSet.next();
-            System.out.println(resultSet.getString("username"));
-            System.out.println(resultSet.getString("password"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void selectUsersByName(String UserName){
-      String s="SELECT * FROM sys.user where username=\""+UserName+"\"";
-        try {
-            ResultSet resultSet=statement.executeQuery(s);
-            while (resultSet.next()){
-                System.out.println(resultSet.getString("password"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public Human getUserByid(String id){
+    public Human selectHumanById(String id) { //HomeWork Вернет имя юзера по id
         String s="SELECT * FROM sys.user where id=\""+id+"\"";
         Human human=null;
         try {
             ResultSet resultSet=statement.executeQuery(s);
             resultSet.next();
+            human=new Human(resultSet.getString("username"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("id"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return human;
+    }
+    public void selectByUserEmail( String email) {//HomeWork список users с одинаковым email
+        String s="SELECT * FROM sys.user where email=\""+email+"\";";
+        try {
+            ResultSet resultSet = statement.executeQuery(s);//запрос с ответом resultset(ответ)
+            resultSet.next();
+            System.out.println(resultSet.getString("username"));
+            System.out.println(resultSet.getString("id"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void UpdatePassword(String pass, String id) {// HomeWork Апдейтит поле password по id
+        String s = "UPDATE `sys`.`user` SET `password` = \"" + pass + "\" WHERE (`id` = \"" + id + "\")";
+        try {
+            statement.execute(s);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+  //  public void selectByUserNameEmail(String username, String email) {
+    //    String s = "SELECT * FROM sys.user where username=\"" + username + "\" and email=\"" + email + "\"";
+      //  try {
+        //    ResultSet resultSet = statement.executeQuery(s);//запрос с ответом resultset(ответ)
+          //  resultSet.next();
+            //System.out.println(resultSet.getString("username"));
+           // System.out.println(resultSet.getString("password"));
+       // } catch (SQLException e) {
+         //   throw new RuntimeException(e);
+        //}
+    //}
+
+ //   public void selectUsersByName(String UserName) {
+  //      String s = "SELECT * FROM sys.user where username=\"" + UserName + "\"";
+ //       try {
+ //           ResultSet resultSet = statement.executeQuery(s);
+ //           while (resultSet.next()) {
+ //               System.out.println(resultSet.getString("password"));
+ //           }
+   //     } catch (SQLException e) {
+   //         throw new RuntimeException(e);
+  //      }
+  //  }
+
+  /*  public Human getUserByid(String id) {
+        String s = "SELECT * FROM sys.user where id=\"" + id + "\"";
+        Human human = null;
+        try {
+            ResultSet resultSet = statement.executeQuery(s);
+            resultSet.next();
             //Human testuse=new Human("fkff","fff@dd.com","pass","jjjf888");
-            human=new Human(
+            human = new Human(
                     resultSet.getString("username"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
@@ -65,10 +100,10 @@ public class StatemenT {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return human ;
-    }
+        return human;
+    }/*
 
-    public void insert(String username, String password, String email)  {
+    public void insert(String username, String password, String email) {
         UUID uuid = UUID.randomUUID();
         String s = "INSERT INTO `sys`.`user` (`username`, `email`, `password`, `id`) VALUES (\"" + username + "\",\"" + email + "\"" +
                 ",\"" + password + "\",\"" + uuid.toString() + "\");";
@@ -78,7 +113,8 @@ public class StatemenT {
             throw new RuntimeException(e);
         }
     }
-    public void insert(String username, String password, String email,String id)  {
+
+    public void insert(String username, String password, String email, String id) {
         String s = "INSERT INTO `sys`.`user` (`username`, `email`, `password`, `id`) VALUES (\"" + username + "\",\"" + email + "\"" +
                 ",\"" + password + "\",\"" + id + "\");";
         //System.out.println(s);
@@ -88,16 +124,18 @@ public class StatemenT {
             throw new RuntimeException(e);
         }
     }
-    public void delete(String id)  {
+
+    public void delete(String id) {
         //DELETE FROM `sys`.`user` WHERE (`id` = '62028969-a6ed-4a17-b546-0d73743f64b7');
-        String s="DELETE FROM `sys`.`user` WHERE (`id` = '"+id+"');";
+        String s = "DELETE FROM `sys`.`user` WHERE (`id` = '" + id + "');";
         try {
             statement.execute(s);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-//    public USER selectfromID(String UUID) throws SQLException {
+
+    //    public USER selectfromID(String UUID) throws SQLException {
 //        String s="SELECT * FROM sys.user WHERE `id`=\""+UUID+"\";";
 //        ResultSet resultSet=statement.executeQuery(s);
 //        resultSet.next();
@@ -108,10 +146,10 @@ public class StatemenT {
 //                        resultSet.getString("id"));
 //    }
     public List<Human> getListAllUsers() throws SQLException {
-        String s="SELECT * FROM sys.user;";
-        ResultSet resultSet=statement.executeQuery(s);
-        List<Human> users=new ArrayList<>();
-        while (resultSet.next()){
+        String s = "SELECT * FROM sys.user;";
+        ResultSet resultSet = statement.executeQuery(s);
+        List<Human> users = new ArrayList<>();
+        while (resultSet.next()) {
             users.add(new Human(resultSet.getString("username"),
                     resultSet.getString("password"),
                     resultSet.getString("email"),
@@ -119,12 +157,89 @@ public class StatemenT {
         }
         return users;
     }
-    public void UpdatePassword(String pass,String id){
-        String s="UPDATE `sys`.`user` SET `password` = \""+pass+"\" WHERE (`id` = \""+id+"\")";
+
+
+    /* public void selectByUserNameEmail(String username, String email) {
+        String s = "SELECT * FROM sys.user where username=\"" + username + "\" and email=\"" + email + "\"";
+        try {
+            ResultSet resultSet=statement.executeQuery(s);//запрос с ответом где resultSet это ответ
+            resultSet.next();
+            System.out.println(resultSet.getString("username"));
+            System.out.println(resultSet.getString("password"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void selectUsersByName(String UserName){
+        String s="SELECT * FROM sys.user where username=\""+UserName+"\"";
+        try {
+            ResultSet resultSet=statement.executeQuery(s);
+            while (resultSet.next()){
+                System.out.println(resultSet.getString("password"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void insert (String username,String email,String password){
+        UUID uuid=UUID.randomUUID();
+        String s="INSERT INTO `sys`.`user` (`username`, `email`, `password`, `id`) " +
+                "VALUES (\""+username+"\", \""+email+"\", \""+password+"\", \""+uuid.toString()+"\");";
         try {
             statement.execute(s);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+    public void insert (String username,String email, String password, String id){
+        String s="INSERT INTO `sys`.`user` (`username`, `email`, `password`, `id`) " +
+                "VALUES (\""+username+"\", \""+email+"\", \""+password+"\", \""+id+"\");";
+        try {
+            statement.execute(s);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void delete(String id){
+        String s="DELETE FROM `sys`.`user` WHERE (`id` = '"+id+"');";
+        try {
+            statement.execute(s);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public List<User> getListAllUsers(){
+        String s="SELECT * FROM sys.user;";
+        List<User> users=new ArrayList<>();
+        try {
+            ResultSet resultSet=statement.executeQuery(s);
+            while (resultSet.next()){
+                users.add(new User(resultSet.getString("username"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("id")));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return users;
+    }*/
+
+ /*    public Human selectFromId(String id) {
+        String s = "SELECT * FROM sys.user WHERE id=\"" + id + "\";";
+        ResultSet resultSet;
+        Human human;
+        try {
+            resultSet = statement.executeQuery(s);
+            resultSet.next();
+            human = new Human(resultSet.getString("username"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("id"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+return human;
+    }*/
 }
+
